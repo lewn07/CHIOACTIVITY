@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+ <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>중국 자연 탐험</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>중국 자연 탐험</title>
+
+<style>
+
+body{
+
+    margin:0;
+
+    font-family :sans-serif;
+
+    background:#f5f5f5;
+}
+
+.region-icon{
+
+    cursor:pointer;
+
+    transition:
+        transform 0.25s ease,
+        filter 0.25s ease;
+
+    transform-box:fill-box;
+    transform-origin:center;
+}
+
+.region-icon:hover{
+
+    transform:scale(1.15);
+
+    filter:
+        drop-shadow(0 0 5px rgb(255, 255, 255))
+        drop-shadow(0 0 10px rgb(255, 255, 255));
+}
+
+.hidden{
+    display: none;
+}
+
+.map-container{
+
+    position:relative;
+
+    width:100vw;
+
+    height:100vh;
+
+    overflow:hidden;
+}
+
+.map-image{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+}
+
+.region-btn{
+
+    position:absolute;
+
+    background:none;
+
+    border:none;
+
+    padding:0;
+
+    cursor:pointer;
+}
+
+.icon-img{
+
+    width:250px;
+
+    transition:0.3s;
+}
+
+.icon-img:hover{
+
+    transform:scale(1.1);
+    filter: drop-shadow(0 0 12px white);
+}
+
+.overlay{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,0.5);
+
+    display:none;
+
+    z-index:999;
+}
+
+.popup{
+
+    position:fixed;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%, -50%);
+
+    max-width: 100vh;
+
+    max-height:70vh;
+
+    overflow: auto;
+
+    background:white;
+
+    padding:clamp(12px, 2vw, 30px);
+
+    border-radius:20px;
+
+    box-shadow:0 0 25px rgba(0,0,0,0.3);
+
+    display:none;
+
+    z-index:1000;
+
+     font-size:clamp(12px, 1.5vw, 18px);
+}
+
+.close-btn{
+
+    margin-top:20px;
+
+    padding:10px 18px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:black;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:16px;
+}
+
+.info-section{
+
+    display:flex;
+
+    gap:20px;
+
+    align-items:center;
+
+    margin-top:20px;
+
+    flex-wrap:wrap;
+}
+
+
+.info-text{
+
+    flex:1;
+
+    line-height:1.8;
+
+    font-size:18px;
+}
+
+.carousel{
+
+    position:relative;
+
+    overflow: auto;
+
+    border-radius:15px;
+
+    margin-bottom:20px;
+}
+
+.carousel img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:auto;
+}
+
+.carousel-btn{
+
+    position:absolute;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:45px;
+
+    height:45px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,0.5);
+
+    color:white;
+
+    cursor:pointer;
+}
+
+.left{
+
+    left:10px;
+}
+
+.right{
+
+    right:10px;
+}
+
+.page-btn{
+
+    width:50px;
+
+    height:50px;
+
+    border:none;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    font-size:22px;
+}
+
+.info-section{
+
+    display:flex;
+
+    gap:20px;
+
+    align-items:flex-start;
+}
+
+.basic-info{
+
+    text-align: left;
+    flex:1;
+    font-size: clamp(14px, 2vw, 25px);
+    font-weight: bold;
+    color: #4b241fb9;
+    line-height:1.6;
+}
+
+body{
+    margin:0;
+    background:#4b241fb9;
+    font-family:'Gowun Dodum', cursive;
+}
+
+.popup-title{
+
+    margin-top: 0;
+
+    text-align:center;
+
+    font-size:clamp(28px, 5vw, 70px);
+
+    margin-bottom:20px;
+
+    color: #4b241fd3;
+}
+
+.popup-text{
+    flex:1;
+    font-size: clamp(14px, 2vw, 25px);
+    font-weight: bold;
+    color: #4b241fb9;
+    line-height:1.8;
+}
+
+.map-image{
+    animation: zoomInMap 1.5s ease-out forwards;
+}
+
+@keyframes zoomInMap{
+    from{
+        transform:scale(1) translateX(0) translateY(0);
+    }
+    to{
+        transform:scale(1.1) translateX(0px) translateY(30px);
+    }
+}
+
+.start-fade{
+    opacity:0;
+    animation:fadeIn 1s ease forwards;
+    animation-delay:2s;
+}
+
+@keyframes fadeIn{
+
+    from{
+        opacity:0;
+    }
+
+    to{
+        opacity:1;
+    }
+}
+
+.fade-in{
+    animation:fadeIn 0.5s ease forwards;
+}
+
+.china-map{
+    width:100%;
+    height:auto;
+    display:block;
+}
+
+#popupMap{
+
+    width:40%;
+
+    aspect-ratio:1/1;
+}
+
+@media (max-width:768px){
+
+    .popup{
+
+        width:70vw;
+
+        transform:translate(-50%, -50%) scale(0.5);
+
+        transform-origin:center center;
+    }
+
+}
+
+.result-image{
+
+    width:100%;
+
+    max-height:90vh;
+
+    object-fit:contain;
+
+    border-radius:15px;
+}
+
+.result-image{
+
+    width:100%;
+
+    max-height:90vh;
+
+    object-fit:contain;
+
+    border-radius:15px;
+}
+
+</style>
+
+</head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
+
+<body>
+    <div
+class="overlay"
+id="overlay">
+</div>
+
+<div class="map-container">
+
+<svg
+    id="chinaMap"
+    class="map-image"
+    viewBox="0 0 1586 992"
+>
+
+    <!-- 지도 -->
+
+    <image
+        href="images/china-maps.png"
+        width="1586"
+        height="992"
+    />
+
+        <image
+        id="heilongjiangBtn"
+        class="region-icon start-fade"
+        href="images/heilongjiang.png"
+        x="1200"
+        y="100"
+        width="200"
+        height="200"
+        onclick="openRegion('heilongjiang')"
+        />
+
+    <image
+        id="neimengguBtn"
+        class="region-icon hidden"
+        href="images/neimenggu.png"
+        x="800"
+        y="250"
+        width="200"
+        height="200"
+        onclick="openRegion('neimenggu')"
+    />
+
+        <image
+        id="xinjiangBtn"
+        class="region-icon hidden"
+        href="images/xinjiang.png"
+        x="400"
+        y="250"
+        width="200"
+        height="200"
+        onclick="openRegion('xinjiang')"
+    />
+
+        <image
+        id="xizangyunnanBtn"
+        class="region-icon hidden"
+        href="images/xizangyunnan.png"
+        x="550"
+        y="560"
+        width="200"
+        height="200"
+        onclick="openRegion('xizangyunnan')"
+    />
+
+        <image
+        id="sichuanBtn"
+        class="region-icon hidden"
+        href="images/sichuan.png"
+        x="700"
+        y="500"
+        width="200"
+        height="200"
+        onclick="openRegion('sichuan')"
+    />
+
+    <image
+        id="resultBtn"
+        class="region-icon hidden"
+        href="images/re.png"
+        x="110"
+        y="0"
+        width="300"
+        height="300"
+        onclick="openResult()"
+    />
+</svg>
+
+</div>
+
+<div class="popup" id="regionPopup">
+
+    <div id="page1">
+
+        <h2 id="popupTitle" class="popup-title"></h2>
+
+        <h2 id="popupTitle"></h2>
+
+        <!-- 캐러셀 -->
+
+        <div class="carousel">
+
+            <img
+            id="carouselImage"
+            src="">
+
+            <button
+            class="carousel-btn left"
+            onclick="prevImage()">
+
+            ◀
+
+            </button>
+
+            <button
+            class="carousel-btn right"
+            onclick="nextImage()">
+
+            ▶
+
+            </button>
+
+        </div>
+
+        <!-- 지도 + 설명 -->
+
+        <div class="info-section">
+
+            <iframe id="popupMap"></iframe>
+
+            <div class="basic-info">
+
+                <p id="popupLocation"></p>
+
+                <p id="popupClimate"></p>
+
+                <p id="popupTerrain"></p>
+
+            </div>
+
+        </div>
+
+        <div style="text-align:right;">
+
+            <button
+            class="page-btn"
+            onclick="nextPage()">
+
+            ▶
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- 2페이지 -->
+
+    <div
+    id="page2"
+    class="hidden">
+
+    <h2 id="popupTitle2" class="popup-title"></h2>
+
+        <h2 id="popupTitle" class="popup-title"></h2>
+
+        <h2 id="popupTitle2" class="popup-title"></h2>
+
+        <div id="popupText2" class="popup-text"></div>
+
+        <div
+        style="
+        display:flex;
+        justify-content:space-between;
+        margin-top:20px;
+        ">
+
+            <button
+            class="page-btn"
+            onclick="prevPage()">
+
+            ◀
+
+            </button>
+
+            <button
+            class="close-btn"
+            onclick="closeRegion()">
+
+            탐험 완료
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div
+id="resultPopup"
+class="popup">
+
+    <h2>탐험 결과</h2>
+
+    <img
+    src="images/ap.png"
+    class="result-image">
+
+    <button
+    class="close-btn"
+    onclick="closeResult()">
+
+    닫기
+
+    </button>
+
+</div>
+
+<script>
+
+const regions = {
+
+    heilongjiang:{
+
+        title:"헤이룽장 성",
+
+       location:"중국 최북동부, <br>    러시아·북한 접경",
+
+        climate:"냉대 몬순기후로 인해 <br>  겨울이 매우 길고 추움",
+
+        terrain:"광활한 평원과 삼림지대, <br>쑹화강 유역",
+
+        text2:"하얼빈은 중국 최북단에 가까운 헤이룽장성에 위치해 있어 겨울철 기온이 매우 낮고 눈이 많이 내리는 한랭한 기후를 보인다. 이러한 지리적 특징으로 인해 겨울에는 강과 호수가 얼고, 눈과 얼음이 풍부하게 형성된다. 하얼빈에서는 이러한 자연환경을 활용하여 얼음과 눈으로 거대한 조형물을 만드는 국제 빙설제가 개최되며, 겨울철 대표 관광 자원으로 자리 잡았다. 또한 풍부한 적설량과 산악 지형을 활용한 스키 산업도 발전하여, 주변의 야부리 스키장을 비롯한 여러 스키 리조트에서 겨울 스포츠를 즐길 수 있다.",
+
+        map:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10933451.707264204!2d117.42341607810091!3d48.00791882674155!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5e5b1fb6ce2f967f%3A0xfd4303cc8360af00!2z7KSR6rWtIO2XpOydtOujveyepSDshLE!5e0!3m2!1sko!2skr!4v1780877544318!5m2!1sko!2skr",
+        
+        images:[
+            "images/heilongjiang.jpg",
+            "images/heilongjiang2.jpg"
+        ],
+
+        next:"neimengguBtn"
+    },
+
+    neimenggu:{
+
+        title:"네이멍구",
+
+        location:"중국 북부, 몽골과 국경 접함",
+
+        climate:"온대 대륙성 기후로 인해 강수량이 적고 일교차가 큼",
+
+        terrain:"초원, 고원, 사막이 넓게 분포",
+
+        text2:"네이멍구는 중국 북부의 내몽고 고원에 위치한 지역으로, 해발 약 1,000m에 이르는 광활한 초원이 펼쳐져 있는 것이 특징이다. 이 지역은 온대 계절풍의 영향을 받는 내륙성 기후로 인해 겨울에는 춥고 건조하며, 여름에는 강수량이 증가해 목초가 무성하게 자란다. 이러한 지리적 환경은 넓은 목초지와 풍부한 자연자원을 형성하였고, 네이멍구를 중국의 대표적인 목축 지역으로 발전시키는 기반이 되었다. 특히 드넓은 초원에서는 오랫동안 말과 가축을 방목하는 유목 문화가 발달하였으며, 말은 생활과 이동에 중요한 역할을 담당해 왔다. 이처럼 광활한 초원 지형과 목축 문화는 오늘날 승마 체험과 초원 캠핑이라는 대표적인 관광 활동으로 이어지고 있다. 여행객들은 끝없이 펼쳐진 초원을 말을 타고 달리며 유목민의 생활 방식을 체험하고, 게르에서 숙박하며 초원의 자연환경을 직접 경험할 수 있다. 이처럼 네이멍구는 초원 지형과 기후가 유목 문화를 형성하고, 나아가 승마와 초원 캠핑 같은 체험 관광이 발달하는 배경이 된 대표적인 사례이다.",
+
+        map:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11576686.856992805!2d101.06459536540589!3d44.8960875840843!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3605cc4bd26914df%3A0xd59746816dc2e950!2z7KSR6rWtIOuCtOuqveqzqCDsnpDsuZjqtaw!5e0!3m2!1sko!2skr!4v1780879935413!5m2!1sko!2skr",
+
+        
+        images:[
+            "images/neimenggu1.jpg",
+            "images/neimenggu2.jpg",
+            "images/neimenggu3.jpg"
+        ],
+
+        next:"xinjiangBtn"
+    },
+
+    xinjiang:{
+
+        title:"신장 위구르 자치구",
+
+        location:"중국 동부, 양쯔강 하류",
+
+        climate:"온난습윤한 몬순기후",
+
+        terrain:"넓은 평야와 호수, 수로 발달",
+
+        text2:"신장은 중국 서북부에 위치한 지역으로, 광대한 사막과 초원, 산맥이 함께 분포하는 것이 특징이다. 특히 타클라마칸 사막과 같은 거대한 사막 지형이 발달해 있으며, 강수량이 매우 적고 건조한 기후를 보인다. 이러한 지리적 환경은 끝없이 펼쳐진 모래언덕과 웅장한 사막 경관을 만들어냈으며, 이는 신장을 대표하는 관광 자원으로 활용되고 있다. 과거 실크로드의 주요 통로였던 신장에서는 오랫동안 낙타가 중요한 교통수단으로 이용되었는데, 오늘날에는 이러한 사막 환경과 역사적 배경을 바탕으로 낙타 트레킹이 인기 있는 체험 활동으로 자리 잡았다. 또한 높은 사구와 부드러운 모래 지형은 샌드보딩을 즐기기에 적합한 환경을 제공한다.",
+
+        map:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15020652.297606926!2d77.96381481941168!3d39.93001510217162!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3806008cfd7b4dab%3A0xa84116ec366707a1!2z7KSR6rWtIOyLoOyepSDsnITqtazrpbQg7J6Q7LmY6rWs!5e0!3m2!1sko!2skr!4v1780879974975!5m2!1sko!2skr",
+
+        
+        images:[
+            "images/xinjiang1.jpg",
+            "images/xinjiang2.jpg",
+            "images/xinjiang3.jpg"
+        ],
+
+        next:"xizangyunnanBtn"
+    },
+
+    xizangyunnan:{
+
+        title:"티베트와 윈난성",
+
+        location:"중국 서남부, 히말라야산맥과 동남아시아 접경",
+
+        climate:"고산기후와 아열대 고원기후가 공존하여 지역별 기후 차이가 큼",
+
+        terrain:"칭짱고원, 산지, 고원, 깊은 계곡이 발달",
+
+        text2:"티베트는 세계에서 가장 높고 넓은 고원인 티베트 고원에 위치해 평균 해발고도가 4,500m를 넘으며, 윈난성 역시 티베트 고원의 동남쪽 끝에 위치한 평균 해발 약 2,000m의 고원 지대이다. 이러한 높은 해발고도는 두 지역만의 독특한 기후와 자연환경을 만들어냈는데, 티베트는 춥고 건조한 기후와 광활한 고원 풍경이 특징이며, 윈난은 높은 고도의 영향으로 열대기후부터 온대기후, 고산기후까지 다양한 기후가 나타난다. 이처럼 웅장한 산악 지형과 고원 환경은 평지에서는 보기 어려운 자연경관을 형성하였고, 이를 따라 걷는 고산 트레킹이 대표적인 체험 활동으로 발전하였다. 여행객들은 티베트의 광대한 고원과 설산, 윈난의 깊은 계곡과 다양한 생태환경을 직접 경험할 수 있으며, 이는 높은 해발고도와 고원 지형이라는 지리적 특징이 만들어낸 대표적인 관광 활동이라 할 수 있다.",
+
+        map:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14929792.704514947!2d88.64645441891777!3d29.118040886337955!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3761317e9c4a2cc1%3A0x1fc12c628413da99!2z7KSR6rWtIOyLnOyepQ!5e0!3m2!1sko!2skr!4v1780880058516!5m2!1sko!2skr",
+
+        
+        images:[
+            "images/xy1.jpg",
+            "images/xy2.jpg",
+            "images/xy3.jpg"
+        ],
+
+        next:"sichuanBtn"
+    },
+
+    sichuan:{
+
+        title:"쓰촨",
+
+        location:"중국 서남부",
+
+        climate:"고온다습",
+
+        terrain:"쓰촨 분지",
+
+        text2:"쓰촨성은 중국 남서부 양쯔강 상류에 위치한 지역으로, 서쪽은 해발 4,000m가 넘는 고원과 산악 지대가, 동쪽은 쓰촨 분지가 자리한 독특한 지형을 가지고 있다. 특히 쓰촨 서부의 천서고원은 높은 해발고도와 풍부한 산림 환경을 갖추고 있어 자이언트 판다가 서식하기에 적합한 조건을 제공하며, 현재도 세계적으로 중요한 판다 서식지로 알려져 있다. 덕분에 여행객들은 판다 보호구역에서 판다의 생태를 직접 관찰하는 생태 탐방을 즐길 수 있다. 한편 청두 평원에서 민장 협곡으로 이어지는 지역은 평원에서 산악 지대로 급격히 변화하면서 깊은 협곡과 급류가 발달하였다. 이러한 지리적 특징 덕분에 민장 협곡 일대에서는 급류를 활용한 래프팅 체험도 가능하다.",
+
+        map:"https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d14147399.942594174!2d103.169517!3d30.038146999999995!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x36e4e73368bdcdb3%3A0xde8f7ccf8f99feb9!2z7KSR6rWtIOyTsOy0qCDshLE!5e0!3m2!1sko!2skr!4v1780304430462!5m2!1sko!2skr",
+
+        images:[
+
+            "images/sichuan1.jpg",
+            "images/sichuan2.jpg",
+            "images/sichuan3.jpg"
+        ],
+        
+        next:"resultBtn"
+    },
+}
+
+let currentRegion = "";
+
+let currentImage = 0;
+
+function openRegion(region){
+
+    currentRegion = region;
+
+    const data = regions[region];
+
+    currentImage = 0;
+
+    document.getElementById("carouselImage")
+    .src = data.images[0];
+
+    document.getElementById("popupTitle")
+    .innerText = data.title;
+
+    document.getElementById("popupTitle2")
+    .innerText = data.title;
+
+    document.getElementById("popupLocation")
+    .innerHTML = "위치: " + data.location;
+
+    document.getElementById("popupClimate")
+    .innerHTML = "기후: " + data.climate;
+
+    document.getElementById("popupTerrain")
+    .innerHTML = "지형: " + data.terrain;
+
+    document.getElementById("popupText2")
+    .innerText = data.text2;
+
+    document.getElementById("popupMap")
+    .src = data.map;
+
+    document.getElementById("overlay")
+    .style.display = "block";
+
+    document.getElementById("regionPopup")
+    .style.display = "block";
+}
+
+function closeRegion(){
+
+    document.getElementById("overlay")
+    .style.display = "none";
+
+    document.getElementById("regionPopup")
+    .style.display = "none";
+
+    const nextBtn =
+    regions[currentRegion].next;
+
+    console.log("currentRegion =", currentRegion);
+    console.log("nextBtn =", nextBtn);
+    console.log("button =", document.getElementById(nextBtn));
+
+    if(nextBtn){
+
+        document
+        .getElementById(nextBtn)
+        .classList.remove("hidden");
+
+        document.getElementById(nextBtn)
+        .classList.add("fade-in");
+    }
+
+    document.getElementById("page2")
+    .classList.add("hidden");
+
+    document.getElementById("page1")
+    .classList.remove("hidden");
+}
+
+function nextImage(){
+
+    const data =
+    regions[currentRegion];
+
+    currentImage++;
+
+    if(currentImage >= data.images.length){
+
+        currentImage = 0;
+    }
+
+    document.getElementById("carouselImage")
+    .src = data.images[currentImage];
+}
+
+function prevImage(){
+
+    const data =
+    regions[currentRegion];
+
+    currentImage--;
+
+    if(currentImage < 0){
+
+        currentImage =
+        data.images.length - 1;
+    }
+
+    document.getElementById("carouselImage")
+    .src = data.images[currentImage];
+}
+
+function nextPage(){
+
+    document.getElementById("page1")
+    .classList.add("hidden");
+
+    document.getElementById("page2")
+    .classList.remove("hidden");
+}
+
+function prevPage(){
+
+    document.getElementById("page2")
+    .classList.add("hidden");
+
+    document.getElementById("page1")
+    .classList.remove("hidden");
+}
+
+const svg = document.getElementById("chinaMap");
+
+function openResult(){
+
+    document.getElementById("overlay")
+    .style.display = "block";
+
+    document.getElementById("resultPopup")
+    .style.display = "block";
+}
+
+function closeResult(){
+
+    document.getElementById("overlay")
+    .style.display = "none";
+
+    document.getElementById("resultPopup")
+    .style.display = "none";
+}
+
+</script>
+
+</body>
+
+</html>
